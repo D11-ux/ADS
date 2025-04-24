@@ -1,0 +1,43 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_squared_error
+from math import sqrt
+from statsmodels.datasets import get_rdataset
+
+# Load the dataset
+air_passengers = get_rdataset('AirPassengers', 'datasets').data['value']
+air_passengers.index = pd.date_range(start='1949-01-01', periods=len(air_passengers), freq='M')
+
+
+# 1. Plot the Original Data
+plt.figure(figsize=(10, 4))
+plt.plot(air_passengers.index, air_passengers, label='Original Data', color='blue')
+plt.title('Original AirPassengers Data')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# 2. Fit ARIMA and Forecast
+model = ARIMA(air_passengers, order=(1, 1, 1))
+model_fit = model.fit()
+
+# Forecast next 12 months
+predictions = model_fit.predict(start=len(air_passengers), end=len(air_passengers)+11, typ='levels')
+
+# Create future dates
+future_dates = pd.date_range(start=air_passengers.index[-1] + pd.DateOffset(months=1), periods=12, freq='M')
+predictions.index = future_dates
+
+# 3. Plot Forecasted Data
+plt.figure(figsize=(10, 4))
+plt.plot(air_passengers.index, air_passengers, label='Historical Data', color='blue')
+plt.plot(predictions.index, predictions, label='Forecasted Data (Next 12 Months)', color='red')
+plt.title('ARIMA Model Forecasting')
+plt.xlabel('Date')
+plt.ylabel('Number of Passengers')
+plt.legend()
+plt.grid(True)
+plt.show()
