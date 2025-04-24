@@ -1,0 +1,37 @@
+import numpy as np
+import pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+
+# Sample data
+data = {
+    'Score': [50, 52, 54, 56, 57, 58, 59, 60, 400, 61, 62]  # 400 is an outlier
+}
+df = pd.DataFrame(data)
+
+# Calculate Z-scores
+z_scores = np.abs(stats.zscore(df['Score']))
+
+# Threshold for defining outliers
+threshold = 3
+df_clean = df[z_scores < threshold]
+
+# Plotting
+plt.figure(figsize=(10, 4))
+
+# Before removal
+plt.subplot(1, 2, 1)
+plt.title("Before Outlier Removal")
+plt.plot(df['Score'], marker='o', linestyle='-', color='red')
+plt.xlabel("Index")
+plt.ylabel("Score")
+
+# After removal
+plt.subplot(1, 2, 2)
+plt.title("After Outlier Removal")
+plt.plot(df_clean['Score'].values, marker='o', linestyle='-', color='green')
+plt.xlabel("Index")
+plt.ylabel("Score")
+
+plt.tight_layout()
+plt.show()
